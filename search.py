@@ -1,28 +1,24 @@
 # Set search text
 query = "psychology"
 
-# Open index database and collection
-import chromadb
-db = chromadb.PersistentClient(path="./database")
-collection = db.get_or_create_collection("documents")
+# Open the Pinecone index
+from pinecone import Pinecone
 
-if not collection.count():
-    raise SystemExit("Run python ./index.py to index the documents first.")
-
-# Load embedding model
-from sentence_transformers import SentenceTransformer
-model = SentenceTransformer("all-MiniLM-L6-v2")
+index = Pinecone().index("vector")
 
 # Find similar chunks
-results = collection.query(
-    query_embeddings=[model.encode(query).tolist()],
-    n_results=5,
-    include=["documents", "metadatas"],
+from pinecone import EmbedQuery
+
+results = index.documents.search(
+    namespace="documents",
+    top_k=5,
+    score_by=[EmbedQuery(field="text", query=query)],
+    include_fields=["text", "source"],
 )
 
 # Print matching chunks and source paths
-for chunk, metadata in zip(results["documents"][0], results["metadatas"][0]):
-    print(f"[{metadata['source']}]({metadata['source']})")
+for match in results.matches:
+    print(f"[{match.source}]({match.source})")
     print("```")
-    print(chunk, end="\n\n")
+    print(match.text, end="\n\n")
     print("```")

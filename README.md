@@ -1,8 +1,8 @@
-# Vector Database Tutorial
+# Pinecone Vector Database Tutorial
 
-Build a local Chroma vector index from the Markdown files in `documents/`.
+Build a hosted Pinecone vector index from the Markdown files in `documents/`.
 
-The script splits each document into overlapping chunks, converts those chunks to embeddings with `all-MiniLM-L6-v2`, and stores the embeddings with the original text and source paths.
+The indexing script splits each document into overlapping chunks and uploads the text and source paths. Pinecone embeds both the chunks and your search query, then returns up to five matching chunks.
 
 ## Environment
 
@@ -19,32 +19,38 @@ source .venv/bin/activate
 
 ## Dependencies
 
-To install dependencies:
+Install the Python dependencies.
 
 ```sh
 python -m pip install -r requirements.txt
 ```
 
+## Pinecone setup
+
+Create a project and API key in the [Pinecone console](https://app.pinecone.io/). From the repository root, set the key in your shell.
+
+```sh
+export PINECONE_API_KEY="your-api-key"
+```
+
+The indexing script creates a serverless index named `vector` with integrated embeddings on the `text` field using `text-embedding-3-small`. Both scripts use the `documents` namespace. [Pinecone integrated embedding documentation](https://sdk.pinecone.io/python/how-to/documents/schema-and-upsert.html)
+
 ## Indexing
 
-To index the documents:
+Run the indexing script.
 
 ```sh
 python ./index.py
 ```
 
-The first run needs internet access to download the embedding model if it is missing from the local cache.
-
-The script prints the number of chunks indexed for each document, followed by `Total indexed chunks:` and the collection count.
-
-Chroma saves the `documents` collection in `./database/`. Rerunning the script updates chunks with the same document path and chunk number.
+The script prints the number of chunks Pinecone accepted for each document and the total for that run. Rerunning it updates chunks with the same source path and chunk number. Chunks from removed files or from the end of shortened files stay in the index.
 
 ## Searching
 
-Edit the search criteria in [search.py](./search.py) and run the search:
+Edit `query` in [search.py](./search.py) and run the search.
 
 ```sh
 python ./search.py > results.md
 ```
 
-Inspect the search results in [results.md](./results.md)
+Open [results.md](./results.md) to see the matching text and source links. Pinecone applies writes asynchronously, so results may take a moment to appear after indexing. [Pinecone upsert documentation](https://sdk.pinecone.io/python/how-to/documents/schema-and-upsert.html)

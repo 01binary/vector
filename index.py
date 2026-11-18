@@ -1,44 +1,49 @@
-# Create index database and collection
-import chromadb
-db = chromadb.PersistentClient(path="./database")
-collection = db.get_or_create_collection("documents")
+# Create and open the Pinecone index
+from pinecone import Pinecone
 
-# Load embedding model
-from sentence_transformers import SentenceTransformer
-model = SentenceTransformer("all-MiniLM-L6-v2")
+pc = Pinecone()
+
+if not pc.indexes.exists("vector"):
+    pc.indexes.create(
+        name="vector",
+        schema={"fields": {"text": {
+            "type": "string",
+            "embed": {"model": "text-embedding-3-small"},
+        }}},
+    )
+
+index = pc.index("vector")
 
 # Split documents into overlapping chunks
 def chunk_text(text, size=500, overlap=100):
-    step = size - overlap
-    for start in range(0, len(text), step):
+    for start in range(0, len(text), size - overlap):
         chunk = text[start:start + size]
         if chunk.strip():
             yield chunk
 
-# Index documents
+# Upload chunks for Pinecone to embed
+from hashlib import sha256
 from pathlib import Path
 
+total = 0
 for path in sorted(Path("documents").rglob("*.md")):
-    # Load document
-    text = path.read_text(encoding="utf-8")
-
-    # Split into overlapping chunks
-    chunks = list(chunk_text(text))
-
+    chunks = list(chunk_text(path.read_text(encoding="utf-8")))
     if not chunks:
         continue
 
-    # Convert chunks to vectors
-    vectors = model.encode(chunks).tolist()
-
-    # Store vectors and source text
-    collection.upsert(
-        ids=[f"{path}:{i}" for i in range(len(chunks))],
-        embeddings=vectors,
-        documents=chunks,
-        metadatas=[{"source": str(path)} for _ in chunks],
+    path_id = sha256(str(path).encode("utf-8")).hexdigest()
+    result = index.documents.batch_upsert(
+        namespace="documents",
+        documents=[
+            {"_id": f"{path_id}:{i}", "text": chunk, "source": str(path)}
+            for i, chunk in enumerate(chunks)
+        ],
+        show_progress=False,
     )
+    if result.errors:
+        raise SystemExit(f"Could not index {path}. {result.errors[0].error_message}")
 
-    print(f"Indexed {path}: {len(chunks)} chunks")
+    print(f"Indexed {path}: {result.successful_item_count} chunks")
+    total += result.successful_item_count
 
-print(f"Total indexed chunks: {collection.count()}")
+print(f"Total indexed chunks: {total}")

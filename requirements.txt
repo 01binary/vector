@@ -1,4 +1,1 @@
-chromadb==1.5.9
-sentence-transformers==6.3.0
-# Keep the PyTorch version compatible with Apple Silicon on macOS 14.
-torch==2.13.0
+pinecone==10.3.0
