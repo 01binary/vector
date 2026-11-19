@@ -1,4 +1,4 @@
-# Vector Database Tutorial
+# Vector Database Tutorial with Chroma
 
 Build a local Chroma vector index from the Markdown files in `documents/`.
 
