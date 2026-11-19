@@ -2,7 +2,7 @@
 
 Build a local Chroma vector index from the Markdown files in `documents/`.
 
-The script splits each document into overlapping chunks, converts those chunks to embeddings with `all-MiniLM-L6-v2`, and stores the embeddings with the original text and source paths.
+The script splits each document into overlapping chunks, converts those chunks to embeddings with [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2), and stores the embeddings with the original text and source paths.
 
 ## Environment
 
