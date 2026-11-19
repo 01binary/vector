@@ -39,7 +39,7 @@ The script prints the number of chunks indexed for each document, followed by `T
 
 Chroma saves the `documents` collection in `./database/`. Rerunning the script updates chunks with the same document path and chunk number.
 
-## Searching
+## Retrieval
 
 Edit the search criteria in [search.py](./search.py) and run the search:
 
@@ -48,3 +48,17 @@ python ./search.py > results.md
 ```
 
 Inspect the search results in [results.md](./results.md)
+
+## Retrieval Augmented Generation
+
+Index the documents first with `python ./index.py`.
+
+Open LM Studio, download a chat model, and start the local server on port `1234` from the Developer tab. [LM Studio server setup](https://lmstudio.ai/docs/developer/rest/quickstart)
+
+Set `model=` in [rag.py](./rag.py) to the model identifier shown in LM Studio. Then run this from the repository root.
+
+```sh
+python ./rag.py
+```
+
+At the `Question or topic:` prompt, type a topic like `probability` or ask a question about the documents.
