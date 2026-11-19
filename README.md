@@ -33,7 +33,9 @@ Create a project and API key in the [Pinecone console](https://app.pinecone.io/)
 export PINECONE_API_KEY="your-api-key"
 ```
 
-The indexing script creates a serverless index named `vector` with integrated embeddings on the `text` field using `text-embedding-3-small`. Both scripts use the `documents` namespace. [Pinecone integrated embedding documentation](https://sdk.pinecone.io/python/how-to/documents/schema-and-upsert.html)
+The indexing script creates a serverless index named `vector` with integrated embeddings on the `text` field using [text-embedding-3-small](https://developers.openai.com/api/docs/models/text-embedding-3-small).
+
+Both scripts use the `documents` namespace. [Pinecone integrated embedding documentation](https://sdk.pinecone.io/python/how-to/documents/schema-and-upsert.html)
 
 ## Indexing
 
