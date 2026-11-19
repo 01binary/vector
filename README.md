@@ -1,4 +1,4 @@
-# Pinecone Vector Database Tutorial
+# Vector Database Tutorial with Pinecone
 
 Build a hosted Pinecone vector index from the Markdown files in `documents/`.
 
