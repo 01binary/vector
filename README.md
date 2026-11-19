@@ -35,7 +35,7 @@ export PINECONE_API_KEY="your-api-key"
 
 The indexing script creates a serverless index named `vector` with integrated embeddings on the `text` field using [text-embedding-3-small](https://developers.openai.com/api/docs/models/text-embedding-3-small).
 
-Both scripts use the `documents` namespace. [Pinecone integrated embedding documentation](https://sdk.pinecone.io/python/how-to/documents/schema-and-upsert.html)
+The scripts use the `documents` namespace. [Pinecone integrated embedding documentation](https://sdk.pinecone.io/python/how-to/documents/schema-and-upsert.html)
 
 ## Indexing
 
@@ -56,3 +56,17 @@ python ./search.py > results.md
 ```
 
 Open [results.md](./results.md) to see the matching text and source links. Pinecone applies writes asynchronously, so results may take a moment to appear after indexing. [Pinecone upsert documentation](https://sdk.pinecone.io/python/how-to/documents/schema-and-upsert.html)
+
+## Asking questions
+
+Index the documents first with `python ./index.py`.
+
+Open LM Studio, download a chat model, and start the local server on port `1234` from the Developer tab. [LM Studio server setup](https://lmstudio.ai/docs/developer/rest/quickstart)
+
+Set `model=` in [rag.py](./rag.py) to the model identifier shown in LM Studio. Then run this from the repository root with `PINECONE_API_KEY` set.
+
+```sh
+python ./rag.py
+```
+
+At the `Question or topic:` prompt, type a topic like `probability` or ask a question about the documents.

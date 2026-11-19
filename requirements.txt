@@ -1,1 +1,2 @@
+openai
 pinecone==10.3.0
