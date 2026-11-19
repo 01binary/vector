@@ -47,7 +47,7 @@ python ./index.py
 
 The script prints the number of chunks Pinecone accepted for each document and the total for that run. Rerunning it updates chunks with the same source path and chunk number. Chunks from removed files or from the end of shortened files stay in the index.
 
-## Searching
+## Retrieval
 
 Edit `query` in [search.py](./search.py) and run the search.
 
@@ -57,9 +57,7 @@ python ./search.py > results.md
 
 Open [results.md](./results.md) to see the matching text and source links. Pinecone applies writes asynchronously, so results may take a moment to appear after indexing. [Pinecone upsert documentation](https://sdk.pinecone.io/python/how-to/documents/schema-and-upsert.html)
 
-## Asking questions
-
-Index the documents first with `python ./index.py`.
+## Retrieval Augmented Generation
 
 Open LM Studio, download a chat model, and start the local server on port `1234` from the Developer tab. [LM Studio server setup](https://lmstudio.ai/docs/developer/rest/quickstart)
 
