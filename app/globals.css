@@ -1,0 +1,116 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  color: #1a1a1a;
+  background: #fff;
+}
+
+.thread {
+  height: 100%;
+}
+
+.viewport {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 48rem;
+  height: 100%;
+  margin: 0 auto;
+  padding: 24px 16px;
+  overflow-y: auto;
+}
+
+.empty {
+  margin: auto;
+  color: #666;
+}
+
+.footer {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+  padding-top: 8px;
+  background: #fff;
+}
+
+.composer {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+}
+
+.composer textarea {
+  flex: 1;
+  border: 0;
+  outline: none;
+  resize: none;
+  font: inherit;
+}
+
+.composer button {
+  border: 0;
+  border-radius: 8px;
+  padding: 0 12px;
+  background: #111;
+  color: #fff;
+}
+
+.user,
+.assistant {
+  max-width: 80%;
+}
+
+.user {
+  align-self: flex-end;
+}
+
+.user-bubble {
+  padding: 8px 12px;
+  border-radius: 16px;
+  background: #111;
+  color: #fff;
+}
+
+.assistant {
+  align-self: flex-start;
+}
+
+.error {
+  color: #8a1f1f;
+}
+
+.markdown p,
+.document p {
+  margin: 0.4em 0;
+}
+
+.markdown a,
+.document a {
+  color: #0645ad;
+}
+
+.document {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+  line-height: 1.5;
+}
+
+.document pre,
+.markdown pre {
+  overflow-x: auto;
+  padding: 12px;
+  background: #f6f6f6;
+}

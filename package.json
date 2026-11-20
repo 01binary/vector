@@ -1,0 +1,23 @@
+{
+  "name": "vector",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^4.0.122",
+    "@ai-sdk/react": "^4.0.182",
+    "@assistant-ui/ai-sdk": "^0.0.19",
+    "@assistant-ui/react": "^0.15.37",
+    "@assistant-ui/react-markdown": "^0.14.26",
+    "@pinecone-database/pinecone": "^9.2.0",
+    "ai": "^7.0.178",
+    "next": "^16.4.6",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
+  }
+}

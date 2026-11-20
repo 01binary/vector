@@ -2,3 +2,7 @@ database
 .python-version
 .venv
 results.md
+node_modules
+.next
+.env
+.env.local

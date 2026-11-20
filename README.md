@@ -68,3 +68,25 @@ python ./rag.py
 ```
 
 At the `Question or topic:` prompt, type a topic like `probability` or ask a question about the documents.
+
+## Chat
+
+The same retrieval flow is available as a chat page. Install Node.js 22 or later, then install the JavaScript dependencies from the repository root.
+
+```sh
+npm install
+```
+
+Copy the example environment file and fill in the same Pinecone key, plus the OpenAI-compatible server you want to call. The example values match a local [LM Studio](https://lmstudio.ai/docs/developer/rest/quickstart) server. Set `OPENAI_MODEL` to the model identifier shown there.
+
+```sh
+cp .env.example .env.local
+```
+
+Start the app.
+
+```sh
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) and ask a question. Source links open the matching file from `documents/` at `/documents/<path>`, rendered as HTML.
