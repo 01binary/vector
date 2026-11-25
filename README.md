@@ -13,7 +13,7 @@ START -> retrieve -> agent -> END
 
 - **retrieve** searches Pinecone for facts similar to the latest message on every turn.
 - **agent** calls the chat model with those facts in the system prompt ([SYSTEM_PROMPT.md](./SYSTEM_PROMPT.md)).
-- **tools** runs `save_fact` when the model decides the user shared something worth remembering, then returns to **agent** for the reply.
+- **tools** runs `save_fact` when the model decides the user shared something worth remembering. Some models, such as Gemma, reply in the same turn as the tool call, so the graph ends there. Others reply after seeing the tool result, so the graph returns to **agent**.
 
 Reading is a fixed step, so retrieval always happens. Writing is a tool call, so the model decides what to store. The tool is an ordinary LangChain tool that calls the Pinecone SDK; it needs no MCP server.
 
@@ -29,7 +29,7 @@ Each fact's ID is a hash of its text, so saving the same fact twice keeps one co
 
 Open LM Studio, download a chat model, and start the local server on port `1234` from the Developer tab. [LM Studio server setup](https://lmstudio.ai/docs/developer/rest/quickstart)
 
-The model must support tool calling, or it will answer without saving anything. For example, `qwen/qwen3-14b` calls `save_fact` through LM Studio, but `google/gemma-3-12b` does not. Any other OpenAI-compatible server works too.
+The model must support tool calling, or it will answer without saving anything. The example settings use `google/gemma-3-12b`. Any other OpenAI-compatible server works too.
 
 ## Running
 

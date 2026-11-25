@@ -9,27 +9,11 @@ import {
   ThreadPrimitive,
 } from "@assistant-ui/react";
 import { useChatRuntime } from "@assistant-ui/ai-sdk";
-import {
-  MarkdownTextPrimitive,
-  memoizeMarkdownComponents,
-} from "@assistant-ui/react-markdown";
+import { MarkdownTextPrimitive } from "@assistant-ui/react-markdown";
 import remarkGfm from "remark-gfm";
 
-const markdownComponents = memoizeMarkdownComponents({
-  a: ({ href, children }) => (
-    <a href={href} target="_blank" rel="noreferrer">
-      {children}
-    </a>
-  ),
-});
-
 function MarkdownText() {
-  return (
-    <MarkdownTextPrimitive
-      remarkPlugins={[remarkGfm]}
-      components={markdownComponents}
-    />
-  );
+  return <MarkdownTextPrimitive remarkPlugins={[remarkGfm]} />;
 }
 
 function SaveFact({ args, result }) {
