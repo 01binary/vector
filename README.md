@@ -4,11 +4,19 @@ A chat agent with long-term memory. It saves facts you tell it in a hosted Pinec
 
 The agent is a [LangGraph](https://docs.langchain.com/oss/javascript/langgraph/overview) graph in [lib/graph.js](./lib/graph.js):
 
-```
-START -> retrieve -> agent -> END
-                      ^   \
-                      |    v
-                      tools
+```mermaid
+flowchart TB
+    subgraph langgraph [LangGraph agent]
+        direction TB
+        start([START]) --> retrieve
+        retrieve --> agent
+        agent -- save_fact --> tools
+        tools -- not replied yet --> agent
+        agent -- no tool call --> finish([END])
+        tools -- already replied --> finish
+    end
+    retrieve -. search .-> pinecone[(Pinecone)]
+    tools -. upsert .-> pinecone
 ```
 
 - **retrieve** searches Pinecone for facts similar to the latest message on every turn.
