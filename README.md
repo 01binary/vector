@@ -1,83 +1,45 @@
 # Vector Database Tutorial with Pinecone
 
-Build a hosted Pinecone vector index from the Markdown files in `documents/`.
+A chat agent with long-term memory. It saves facts you tell it in a hosted Pinecone vector index and retrieves them in later conversations.
 
-The indexing script splits each document into overlapping chunks and uploads the text and source paths. Pinecone embeds both the chunks and your search query, then returns up to five matching chunks.
+The agent is a [LangGraph](https://docs.langchain.com/oss/javascript/langgraph/overview) graph in [lib/graph.js](./lib/graph.js):
 
-## Environment
-
-If you already have `pyenv` set up, skip to the next section.
-
-On macOS with Homebrew, install it with `brew install pyenv` or follow the [official pyenv setup guide](https://github.com/pyenv/pyenv#installation).
-
-```sh
-pyenv install -s 3.11
-pyenv local 3.11
-python -m venv .venv
-source .venv/bin/activate
+```
+START -> retrieve -> agent -> END
+                      ^   \
+                      |    v
+                      tools
 ```
 
-## Dependencies
+- **retrieve** searches Pinecone for facts similar to the latest message on every turn.
+- **agent** calls the chat model with those facts in the system prompt ([SYSTEM_PROMPT.md](./SYSTEM_PROMPT.md)).
+- **tools** runs `save_fact` when the model decides the user shared something worth remembering, then returns to **agent** for the reply.
 
-Install the Python dependencies.
+Reading is a fixed step, so retrieval always happens. Writing is a tool call, so the model decides what to store. The tool is an ordinary LangChain tool that calls the Pinecone SDK; it needs no MCP server.
 
-```sh
-python -m pip install -r requirements.txt
-```
+Pinecone embeds the fact text itself with [text-embedding-3-small](https://developers.openai.com/api/docs/models/text-embedding-3-small), so the app never handles vectors. [Pinecone integrated embedding documentation](https://docs.pinecone.io/guides/index-data/indexing-overview)
 
 ## Pinecone setup
 
-Create a project and API key in the [Pinecone console](https://app.pinecone.io/). From the repository root, set the key in your shell.
+Create a project and API key in the [Pinecone console](https://app.pinecone.io/). On the first request the app creates a serverless index named `vector` if it does not exist, and stores facts in its `facts` namespace.
 
-```sh
-export PINECONE_API_KEY="your-api-key"
-```
+Each fact's ID is a hash of its text, so saving the same fact twice keeps one copy. Pinecone applies writes asynchronously, so a fact may take a moment to become searchable after it is saved. [Pinecone upsert documentation](https://docs.pinecone.io/guides/index-data/upsert-data)
 
-The indexing script creates a serverless index named `vector` with integrated embeddings on the `text` field using [text-embedding-3-small](https://developers.openai.com/api/docs/models/text-embedding-3-small).
-
-The scripts use the `documents` namespace. [Pinecone integrated embedding documentation](https://sdk.pinecone.io/python/how-to/documents/schema-and-upsert.html)
-
-## Indexing
-
-Run the indexing script.
-
-```sh
-python ./index.py
-```
-
-The script prints the number of chunks Pinecone accepted for each document and the total for that run. Rerunning it updates chunks with the same source path and chunk number. Chunks from removed files or from the end of shortened files stay in the index.
-
-## Retrieval
-
-Edit `query` in [search.py](./search.py) and run the search.
-
-```sh
-python ./search.py > results.md
-```
-
-Open [results.md](./results.md) to see the matching text and source links. Pinecone applies writes asynchronously, so results may take a moment to appear after indexing. [Pinecone upsert documentation](https://sdk.pinecone.io/python/how-to/documents/schema-and-upsert.html)
-
-## Retrieval Augmented Generation
+## Chat model
 
 Open LM Studio, download a chat model, and start the local server on port `1234` from the Developer tab. [LM Studio server setup](https://lmstudio.ai/docs/developer/rest/quickstart)
 
-Set `model=` in [rag.py](./rag.py) to the model identifier shown in LM Studio. Then run this from the repository root with `PINECONE_API_KEY` set.
+The model must support tool calling, or it will answer without saving anything. For example, `qwen/qwen3-14b` calls `save_fact` through LM Studio, but `google/gemma-3-12b` does not. Any other OpenAI-compatible server works too.
 
-```sh
-python ./rag.py
-```
+## Running
 
-At the `Question or topic:` prompt, type a topic like `probability` or ask a question about the documents.
-
-## Chat
-
-The same retrieval flow is available as a chat page. Install Node.js 22 or later, then install the JavaScript dependencies from the repository root.
+Install Node.js 22 or later, then install the dependencies from the repository root.
 
 ```sh
 npm install
 ```
 
-Copy the example environment file and fill in the same Pinecone key, plus the OpenAI-compatible server you want to call. The example values match a local [LM Studio](https://lmstudio.ai/docs/developer/rest/quickstart) server. Set `OPENAI_MODEL` to the model identifier shown there.
+Copy the example environment file and fill in your Pinecone key, plus the OpenAI-compatible server you want to call. Set `OPENAI_MODEL` to the model identifier shown in LM Studio.
 
 ```sh
 cp .env.example .env.local
@@ -89,4 +51,4 @@ Start the app.
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) and ask a question. Source links open the matching file from `documents/` at `/documents/<path>`, rendered as HTML.
+Open [http://localhost:3000](http://localhost:3000) and tell the agent something about yourself, such as `My dog is named Rex`. A `Remembered:` line shows each fact it saves. Start a new chat and ask `What is my dog's name?` to see it retrieved.

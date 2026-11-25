@@ -23,22 +23,27 @@ const markdownComponents = unstable_memoizeMarkdownComponents({
   ),
 });
 
-function linkCitations(text) {
-  return text.replace(
-    /\[(documents\/[^\]]+\.md)\](?!\()/g,
-    "[$1](/$1)",
-  );
-}
-
 function MarkdownText() {
   return (
     <MarkdownTextPrimitive
       remarkPlugins={[remarkGfm]}
-      preprocess={linkCitations}
       components={markdownComponents}
     />
   );
 }
+
+function SaveFact({ args, result }) {
+  return (
+    <p className="fact">
+      {result ? "Remembered" : "Remembering"}: {args?.fact}
+    </p>
+  );
+}
+
+const partComponents = {
+  Text: MarkdownText,
+  tools: { by_name: { save_fact: SaveFact }, Fallback: () => null },
+};
 
 export default function Page() {
   const runtime = useChatRuntime();
@@ -48,7 +53,7 @@ export default function Page() {
       <ThreadPrimitive.Root className="thread">
         <ThreadPrimitive.Viewport className="viewport">
           <AuiIf condition={(state) => state.thread.isEmpty}>
-            <p className="empty">Ask a question about the documents.</p>
+            <p className="empty">Tell me about yourself, or ask what I remember.</p>
           </AuiIf>
 
           <ThreadPrimitive.Messages>
@@ -60,7 +65,7 @@ export default function Page() {
           <ThreadPrimitive.ViewportFooter className="footer">
             <ComposerPrimitive.Root className="composer">
               <ComposerPrimitive.Input
-                placeholder="Ask about the documents"
+                placeholder="Message"
                 rows={1}
               />
               <ComposerPrimitive.Send>Send</ComposerPrimitive.Send>
@@ -96,7 +101,7 @@ function UserMessage() {
 function AssistantMessage() {
   return (
     <MessagePrimitive.Root className="assistant markdown">
-      <MessagePrimitive.Parts components={{ Text: MarkdownText }} />
+      <MessagePrimitive.Parts components={partComponents} />
       <MessageError />
     </MessagePrimitive.Root>
   );

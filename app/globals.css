@@ -91,26 +91,22 @@ body {
   color: #8a1f1f;
 }
 
-.markdown p,
-.document p {
+.markdown p {
   margin: 0.4em 0;
 }
 
-.markdown a,
-.document a {
+.markdown a {
   color: #0645ad;
 }
 
-.document {
-  max-width: 44rem;
-  margin: 0 auto;
-  padding: 32px 20px 64px;
-  line-height: 1.5;
-}
-
-.document pre,
 .markdown pre {
   overflow-x: auto;
   padding: 12px;
   background: #f6f6f6;
+}
+
+.fact {
+  margin: 0.4em 0;
+  color: #666;
+  font-size: 0.9em;
 }
