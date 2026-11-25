@@ -11,11 +11,11 @@ import {
 import { useChatRuntime } from "@assistant-ui/ai-sdk";
 import {
   MarkdownTextPrimitive,
-  unstable_memoizeMarkdownComponents,
+  memoizeMarkdownComponents,
 } from "@assistant-ui/react-markdown";
 import remarkGfm from "remark-gfm";
 
-const markdownComponents = unstable_memoizeMarkdownComponents({
+const markdownComponents = memoizeMarkdownComponents({
   a: ({ href, children }) => (
     <a href={href} target="_blank" rel="noreferrer">
       {children}
