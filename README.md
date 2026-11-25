@@ -6,15 +6,12 @@ The agent is a [LangGraph](https://docs.langchain.com/oss/javascript/langgraph/o
 
 ```mermaid
 flowchart TB
-    subgraph langgraph [LangGraph agent]
-        direction TB
-        start([START]) --> retrieve
-        retrieve --> agent
-        agent -- save_fact --> tools
-        tools -- not replied yet --> agent
-        agent -- no tool call --> finish([END])
-        tools -- already replied --> finish
-    end
+    start([START]) --> retrieve
+    retrieve --> agent
+    agent -- no tool call --> finish([END])
+    agent -- save_fact --> tools
+    tools -- already replied --> finish
+    tools -- not replied yet --> agent
     retrieve -. search .-> pinecone[(Pinecone)]
     tools -. upsert .-> pinecone
 ```
